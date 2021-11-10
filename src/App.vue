@@ -119,43 +119,60 @@
 
     <div>
 
-        <form @submit.prevent="addProject">
-            <input placeholder="name" v-model="project.name">
-            <select v-model="project.owner">
-                <option v-for="owner in owners" :value="owner.id">{{owner.first_name}} {{owner.last_name}}</option>
-            </select>
-            <button type="submit">Ajouter le projet</button>
-        </form>
+        <section>
+            <h2>Ajouter un projet</h2>
+            <form @submit.prevent="addProject">
+                <div>
+                    <label>
+                        Nom du projet
+                    </label>
+                    <input placeholder="name" v-model="project.name">
+                </div>
+                <div>
+                    <label>
+                        Propriétaire du projet
+                    </label>
+                    <select v-model="project.owner">
+                        <option v-for="owner in owners" :value="owner.id">{{owner.first_name}} {{owner.last_name}}</option>
+                    </select>
+                </div>
+                <button type="submit">Ajouter le projet</button>
+            </form>
+        </section>
+
+        <section>
+            <h2>Liste des projets</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Porteur</th>
+                    <th>Documents</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="project in projects">
+                    <td>{{project.name}}</td>
+                    <td>{{project.profile?.first_name}} {{project.profile?.last_name}}</td>
+                    <td>
+                        <ul>
+                            <li v-for="doc in project.document">
+                                <a href="" @click.prevent="downloadFile(doc.object_id)">{{doc.object_id}}</a>
+                                <button @click="deleteFile(project.id, doc)">X</button>
+                            </li>
+                        </ul>
+                        <input type="file" @change="uploadFile($event, project.id)">
+                    </td>
+                    <td>
+                        <button @click="deleteProject(project.id)">Supprimer</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
 
 
-        <table>
-            <thead>
-            <tr>
-                <th>Nom</th>
-                <th>Porteur</th>
-                <th>Documents</th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="project in projects">
-                <td>{{project.name}}</td>
-                <td>{{project.profile?.first_name}} {{project.profile?.last_name}}</td>
-                <td>
-                    <ul>
-                        <li v-for="doc in project.document">
-                            <a href="" @click.prevent="downloadFile(doc.object_id)">{{doc.object_id}}</a>
-                            <button @click="deleteFile(project.id, doc)">X</button>
-                        </li>
-                    </ul>
-                    <input type="file" @change="uploadFile($event, project.id)">
-                </td>
-                <td>
-                    <button @click="deleteProject(project.id)">Supprimer</button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
     </div>
 
 </template>
@@ -177,5 +194,9 @@
 
     table {
         border-collapse: collapse;
+    }
+
+    label {
+        display: block;
     }
 </style>
