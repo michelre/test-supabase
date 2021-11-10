@@ -140,7 +140,7 @@
             <tbody>
             <tr v-for="project in projects">
                 <td>{{project.name}}</td>
-                <td>{{project.profile.first_name}} {{project.profile.last_name}}</td>
+                <td>{{project.profile?.first_name}} {{project.profile?.last_name}}</td>
                 <td>
                     <ul>
                         <li v-for="doc in project.document">
