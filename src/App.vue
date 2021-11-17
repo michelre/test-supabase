@@ -3,15 +3,21 @@
     import {ref, onMounted} from 'vue'
 
     export default {
-        setup() {
+            setup() {
             const projects = ref([])
             const owners = ref([])
+            const users = ref([
+                'remi38180@yopmail.com',
+                'remi38181@yopmail.com',
+                'remi@yopmail.com', // user not exists
+            ])
             const project = ref({name: '', owner: null})
+            const user = ref('remi38180@yopmail.com')
 
             const loadProjects = async () => {
                 let {data, error, status} = await supabase
                     .from('project')
-                    .select('id, name, profile ( first_name, last_name ), document (id, object_id)')
+                    .select('id, name')
 
                 if (!error && status === 200) {
                     projects.value = data
@@ -27,6 +33,8 @@
                     owners.value = data
                 }
             }
+
+
 
             const addProject = async () => {
                 const {data, error} = await supabase.from('project').insert(project.value)
@@ -91,9 +99,27 @@
                 })
             }
 
+            const changeUser = async () => {
+                projects.value = []
+                let {session, error} = await supabase.auth.signIn({
+                    email: user.value,
+                    password: 'rwigo123'
+                })
+
+                if(error){
+                    alert('error')
+                }
+
+                if(!error){
+                    supabase.auth.setAuth(session.access_token)
+                    loadProjects()
+                }
+            }
+
             onMounted(() => {
                 loadProjects()
                 loadOwners()
+                changeUser('remi38180@yopmail.com')
             })
 
 
@@ -101,11 +127,15 @@
                 projects,
                 owners,
                 project,
+                users,
+                user,
                 addProject,
                 deleteProject,
                 uploadFile,
                 downloadFile,
                 deleteFile,
+                changeUser,
+
             }
 
         },
@@ -118,6 +148,12 @@
 <template>
 
     <div>
+
+        <section>
+            <select v-model="user" @change="changeUser">
+                <option v-for="user in users" :value="user">{{user}}</option>
+            </select>
+        </section>
 
         <section>
             <h2>Ajouter un projet</h2>
